@@ -1,0 +1,282 @@
+<div class="notes-layout">
+  <!-- Folder Sidebar -->
+  <app-folder-sidebar 
+    (folderSelected)="onFolderSelected($event)"
+    class="sidebar folder-sidebar"
+  ></app-folder-sidebar>
+
+  <!-- Main Content -->
+  <div class="main-content">
+    <div class="note-list-container">
+      <div class="header">
+        <h1>Notes</h1>
+        <div class="header-actions">
+          <button class="create-note-btn" (click)="openCreateNoteModal()">
+            <fa-icon [icon]="faPlus"></fa-icon>
+            Create New Note
+          </button>
+          
+          <div class="tag-dropdown-container">
+            <button class="create-tag-btn" (click)="toggleTagDropdown()">
+              <fa-icon [icon]="faTag"></fa-icon>
+              Create New Tag
+            </button>
+            <div class="tag-dropdown" *ngIf="showTagDropdown" (click)="onTagDropdownClick($event)">
+              <div class="tag-form">
+                <input 
+                  type="text" 
+                  [(ngModel)]="newTagName"
+                  placeholder="Enter tag name"
+                  class="tag-input"
+                  (keyup.enter)="createTag()"
+                  #tagInput
+                >
+                <div class="tag-actions">
+                  <button (click)="createTag()" class="save-btn" [disabled]="!newTagName.trim()">Save</button>
+                  <button (click)="toggleTagDropdown()" class="cancel-btn">Cancel</button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <button 
+            class="filter-toggle-btn" 
+            (click)="toggleFilters()" 
+            type="button"
+            [class.closed]="!showFilters"
+          >
+            {{ showFilters ? 'Close Filters' : 'Open Filters' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Filters Section -->
+      <div class="filters-section" [class.collapsed]="!showFilters">
+        <div class="filter-header">
+          <h3 class="filter-main-title">Filters</h3>
+          <button 
+            (click)="clearAllFilters()" 
+            class="clear-filters-btn"
+            [class.hidden]="!hasActiveFilters()"
+            type="button"
+          >
+            Clear All Filters
+          </button>
+        </div>
+        <div class="filters-row">
+          <!-- Tags Filter -->
+          <div class="tags-filter">
+            <div class="filter-label">Tags:</div>
+            <div class="tags-list">
+              <button 
+                class="tag-filter-btn"
+                [class.active]="selectedFilterTags.length === 0"
+                (click)="toggleAllTags()"
+              >
+                All
+              </button>
+              <button 
+                *ngFor="let tag of tags" 
+                class="tag-filter-btn"
+                [class.active]="selectedFilterTags.includes(tag.id)"
+                (click)="toggleTagFilter(tag.id)"
+              >
+                {{ tag.name }}
+              </button>
+            </div>
+          </div>
+
+          <!-- Category and Team Member Filters -->
+          <div class="dropdown-filters">
+          <div class="filter-group">
+            <label for="categoryFilter">Category:</label>
+            <select 
+              id="categoryFilter" 
+              [(ngModel)]="selectedCategory"
+              (change)="onCategoryFilterChange()"
+              class="filter-dropdown"
+            >
+              <option value="">All Categories</option>
+              <option *ngFor="let category of availableCategories" [value]="category">
+                {{ category }}
+              </option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="teamFilter">Team:</label>
+            <select 
+              id="teamFilter" 
+              [(ngModel)]="selectedTeam"
+              (change)="onTeamFilterChange()"
+              class="filter-dropdown"
+            >
+              <option value="">All Teams</option>
+              <option *ngFor="let team of availableTeams" [value]="team.id">
+                {{ team.name }}
+              </option>
+            </select>
+          </div>
+
+
+        </div>
+        </div>
+      </div>
+
+      <!-- Filtered By Information (shown when filters are closed) -->
+      <div *ngIf="!showFilters && hasActiveFilters()" class="filtered-by-info">
+        <span class="filtered-by-label">Filtered by:</span>
+        
+        <!-- Tag Pills -->
+        <div *ngFor="let tagId of selectedFilterTags" class="filter-pill">
+          <span class="pill-text">{{ getTagName(tagId) }}</span>
+          <button 
+            (click)="clearTagFilter(tagId)" 
+            class="pill-close-btn"
+            type="button"
+            title="Remove this filter"
+          >
+            ×
+          </button>
+        </div>
+        
+        <!-- Category Pill -->
+        <div *ngIf="selectedCategory" class="filter-pill">
+          <span class="pill-text">Category: {{ selectedCategory }}</span>
+          <button 
+            (click)="clearCategoryFilter()" 
+            class="pill-close-btn"
+            type="button"
+            title="Remove this filter"
+          >
+            ×
+          </button>
+        </div>
+        
+        <!-- Team Pill -->
+        <div *ngIf="selectedTeam" class="filter-pill">
+          <span class="pill-text">Team: {{ getTeamName(selectedTeam) }}</span>
+          <button 
+            (click)="clearTeamFilter()" 
+            class="pill-close-btn"
+            type="button"
+            title="Remove this filter"
+          >
+            ×
+          </button>
+        </div>
+        
+        <button 
+          (click)="clearAllFilters()" 
+          class="clear-filters-link"
+          type="button"
+        >
+          Clear all
+        </button>
+      </div>
+
+      <div *ngIf="loading" class="loading">
+        <p>Loading notes...</p>
+      </div>
+
+      <div *ngIf="error" class="error">
+        <p>{{ error }}</p>
+        <button (click)="loadNotes()">Retry</button>
+      </div>
+
+      <div *ngIf="!loading && !error && notes.length === 0" class="empty-state">
+        <p>No notes found.</p>
+      </div>
+
+      <div *ngIf="!loading && !error && notes.length > 0 && filteredNotes.length === 0 && searchTerm" class="no-results">
+        <p>No notes match your search for "{{ searchTerm }}"</p>
+        <button (click)="clearSearch()" class="clear-search-btn-large">Clear Search</button>
+      </div>
+
+      <!-- Sorting Section -->
+      <div *ngIf="!loading && !error && filteredNotes.length > 0" class="sorting-section">
+        <div class="sorting-container">
+          <label for="sortBy" class="sort-label">Sort by:</label>
+          <select 
+            id="sortBy" 
+            [(ngModel)]="sortBy" 
+            (change)="onSortChange()"
+            class="sort-dropdown"
+          >
+            <option value="">Default</option>
+            <option value="title">Note Title</option>
+            <option value="tags">Tags</option>
+            <option value="category">Category</option>
+          </select>
+        </div>
+      </div>
+
+      <div *ngIf="!loading && !error && filteredNotes.length > 0" class="notes-grid">
+        <div *ngFor="let note of filteredNotes" class="note-card">
+          <div class="note-header">
+            <h3 class="note-title">{{ note.title }}</h3>
+            <div class="note-actions">
+              <button class="edit-btn" (click)="openEditNoteModal(note)" title="Edit note">
+                <fa-icon [icon]="faPen"></fa-icon>
+              </button>
+              <button class="delete-btn" (click)="deleteNote(note.id)" title="Delete note">
+                <fa-icon [icon]="faTrashAlt"></fa-icon>
+              </button>
+            </div>
+          </div>
+          
+          <div class="note-content">
+            <div class="note-text" [innerHTML]="getNoteContentPreview(note.content)"></div>
+          </div>
+
+          <div class="note-meta">
+            <!-- Folder and Category Row -->
+            <div class="note-info-row">
+              <!-- Folder -->
+              <div class="note-info-section half-width">
+                <div class="info-title">Folder</div>
+                <div class="info-content">
+                  {{ note.folderId ? getFolderName(note.folderId) : '--' }}
+                </div>
+              </div>
+              
+              <!-- Category -->
+              <div class="note-info-section half-width">
+                <div class="info-title">Category</div>
+                <div class="info-content">
+                  {{ note.category || '--' }}
+                </div>
+              </div>
+            </div>
+            
+            <!-- Tags -->
+            <div class="note-info-section">
+              <div class="info-title">Tags</div>
+              <div class="info-content">
+                <div *ngIf="getNoteTags(note).length > 0" class="note-tags">
+                  <span *ngFor="let tag of getNoteTags(note)" class="tag">{{ tag.name }}</span>
+                </div>
+                <div *ngIf="getNoteTags(note).length === 0" class="no-info">--</div>
+              </div>
+            </div>
+            
+            <!-- Team -->
+            <div class="note-info-section">
+              <div class="info-title">Team</div>
+              <div class="info-content">
+                <div *ngIf="note.assignedTeams && note.assignedTeams.length > 0 && getValidTeams(note.assignedTeams).length > 0" class="note-teams">
+                  <span *ngFor="let teamId of getValidTeams(note.assignedTeams)" class="team-pill">{{ getTeamName(teamId) }}</span>
+                </div>
+                <div *ngIf="!note.assignedTeams || note.assignedTeams.length === 0 || getValidTeams(note.assignedTeams).length === 0" class="no-info">--</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="note-footer">
+            <button (click)="openNoteDetailsModal(note)" class="view-details" type="button">View Details</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

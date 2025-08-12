@@ -1,0 +1,202 @@
+<div class="team-members-container">
+  <div class="header">
+    <h1>Teams</h1>
+    <div class="header-actions">
+      <button class="create-new-button" (click)="createNewTeam()">
+        <fa-icon [icon]="faPlus"></fa-icon>
+        Create New Team
+      </button>
+    </div>
+  </div>
+  
+  <div class="content">
+    <div class="teams-list">
+      <div class="team-card" *ngFor="let team of filteredTeams">
+        <div class="team-header">
+          <h3 class="team-title">{{ team.name }}</h3>
+          <div class="team-actions">
+            <button class="action-btn edit-btn" (click)="editTeamCard(team)">
+              <fa-icon [icon]="faPen"></fa-icon>
+            </button>
+            <button class="action-btn delete-btn" (click)="deleteTeamCard(team)">
+              <fa-icon [icon]="faTrashAlt"></fa-icon>
+            </button>
+          </div>
+        </div>
+        
+        <div class="team-members">
+          <div class="member-pills">
+            <div 
+              class="member-pill" 
+              *ngFor="let member of getTeamMembers(team).slice(0, 4)"
+              [title]="member.name"
+            >
+              {{ member.name }}
+            </div>
+          </div>
+          
+          <div class="remaining-members" *ngIf="getTeamMembers(team).length > 4" (click)="openTeamMembersModal(team)">
+            <span class="remaining-count">+{{ getTeamMembers(team).length - 4 }} more members</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- No Teams Message -->
+      <div *ngIf="filteredTeams.length === 0" class="no-teams-message">
+        <p>No teams created yet, create a new team first</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Team Members Modal -->
+<div class="modal-overlay" *ngIf="showTeamMembersModal" (click)="closeTeamMembersModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2 class="modal-title">{{ selectedTeam?.name }}</h2>
+      <div class="modal-actions">
+        <button class="action-btn edit-btn" (click)="editTeam()">
+          <fa-icon [icon]="faPen"></fa-icon>
+        </button>
+        <button class="action-btn delete-btn" (click)="deleteTeam()">
+          <fa-icon [icon]="faTrashAlt"></fa-icon>
+        </button>
+        <button class="action-btn close-btn" (click)="closeTeamMembersModal()">
+          <fa-icon [icon]="faTimes"></fa-icon>
+        </button>
+      </div>
+    </div>
+    
+    <div class="modal-body">
+      <div class="all-member-pills" *ngIf="selectedTeam">
+        <div 
+          class="member-pill" 
+          *ngFor="let member of getTeamMembers(selectedTeam)"
+          [title]="member.name"
+        >
+          {{ member.name }}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Team Modal -->
+<div class="modal-overlay" *ngIf="showEditTeamModal" (click)="closeEditTeamModal()">
+  <div class="modal-content edit-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2 class="modal-title">{{ isCreatingTeam ? 'Create New Team' : 'Edit Team' }}</h2>
+      <button class="action-btn close-btn" (click)="closeEditTeamModal()">
+        <fa-icon [icon]="faTimes"></fa-icon>
+      </button>
+    </div>
+    
+    <div class="modal-body">
+      <div class="form-group">
+        <label for="teamName">Team Name</label>
+        <input 
+          type="text" 
+          id="teamName"
+          #teamNameInput
+          [(ngModel)]="editingTeam.name"
+          class="form-input"
+          placeholder="Enter team name"
+        >
+      </div>
+      
+      <div class="form-group">
+      <div class="add-member-section">
+          <h4>Add Member</h4>
+          <div class="dropdown-container">
+            <button 
+              class="dropdown-toggle" 
+              (click)="toggleMemberDropdown()"
+              type="button"
+            >
+              <span *ngIf="!selectedMemberToAdd">Select a member to add...</span>
+              <span *ngIf="selectedMemberToAdd">{{ selectedMemberToAdd.name }}</span>
+              <fa-icon [icon]="faPlus"></fa-icon>
+            </button>
+            
+            <div class="dropdown-menu" *ngIf="showMemberDropdown">
+              <div class="dropdown-options">
+                <div 
+                  class="dropdown-option" 
+                  *ngFor="let member of getAvailableMembers()"
+                  (click)="selectMemberToAdd(member)"
+                >
+                  {{ member.name }}
+                </div>
+                <div 
+                  class="dropdown-option no-results" 
+                  *ngIf="getAvailableMembers().length === 0"
+                >
+                  No members available
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="current-members">
+          <h4>Current Members</h4>
+          <div class="member-list">
+            <div 
+              class="member-pill" 
+              *ngFor="let member of getCurrentTeamMembers()"
+            >
+              <span class="member-name">{{ member.name }}</span>
+              <button 
+                class="remove-tag-btn" 
+                (click)="removeMember(member)"
+                title="Remove member"
+              >x
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        
+      </div>
+    </div>
+    
+    <div class="modal-footer">
+      <button class="btn btn-primary" (click)="saveTeamChanges()">
+        {{ isCreatingTeam ? 'Create Team' : 'Save Changes' }}
+      </button>
+      <button class="btn btn-danger" (click)="closeEditTeamModal()">Cancel</button>
+      
+    </div>
+  </div>
+</div>
+
+<!-- Delete Team Confirmation Modal -->
+<div class="modal-overlay" *ngIf="showDeleteConfirmationModal" (click)="closeDeleteConfirmationModal()">
+  <div class="modal-content delete-confirmation-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2 class="modal-title">Delete Team</h2>
+      <button class="action-btn close-btn" (click)="closeDeleteConfirmationModal()">
+        <fa-icon [icon]="faTimes"></fa-icon>
+      </button>
+    </div>
+    
+    <div class="modal-body">
+      <div class="confirmation-content">
+        <div class="confirmation-icon">
+          <fa-icon [icon]="faExclamationTriangle"></fa-icon>
+        </div>
+        <div class="confirmation-text">
+          <p>Are you sure you want to delete this team?</p>
+          <p class="warning-text">This action cannot be undone. The team "{{ teamToDelete?.name }}" will be permanently removed.</p>
+        </div>
+      </div>
+    </div>
+    
+    <div class="modal-footer">
+      <button class="btn btn-secondary" (click)="closeDeleteConfirmationModal()">Cancel</button>
+      <button class="btn btn-danger" (click)="confirmDeleteTeam()" [disabled]="deletingTeam">
+        <span *ngIf="!deletingTeam">Delete Team</span>
+        <span *ngIf="deletingTeam">Deleting...</span>
+      </button>
+    </div>
+  </div>
+</div>
