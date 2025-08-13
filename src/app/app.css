@@ -1738,7 +1738,7 @@ table td:hover {
   border-radius: 6px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   z-index: 1000;
-  width: 250px;
+  width: 160px;
   animation: dropdownFadeIn 0.2s ease;
 }
 
@@ -1756,6 +1756,7 @@ table td:hover {
   display: flex;
   flex-direction: column;
   gap: 5px;
+  flex: 1;
 }
 
 .size-input-group label {
@@ -1765,12 +1766,11 @@ table td:hover {
 }
 
 .table-size-input {
-  width: 60px;
+  width: 100%;
   padding: 6px 8px;
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 0.8rem;
-  text-align: center;
 }
 
 .table-size-input:focus {
@@ -1785,7 +1785,7 @@ table td:hover {
 }
 
 .table-actions .save-btn {
-  flex: 1;
+  
   padding: 8px 12px;
   background-color: #007bff;
   color: white;
@@ -1802,7 +1802,7 @@ table td:hover {
 }
 
 .table-actions .cancel-btn {
-  flex: 1;
+  
   padding: 8px 12px;
   background-color: #6c757d;
   color: white;
@@ -1922,7 +1922,7 @@ table td:hover {
 /* Responsive Table */
 @media (max-width: 768px) {
   .table-dropdown {
-    width: 200px;
+    width: 160px;
   }
   
   .table-size-inputs {
