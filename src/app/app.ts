@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { faPlus, faPen, faTrashAlt, faSearch, faTimes, faFolder, faTag, faSignOutAlt, faFilter, faExclamationTriangle, faCaretDown, faUser, faCheck } from '@fortawesome/free-solid-svg-icons';
+import { faPlus, faPen, faTrashAlt, faSearch, faTimes, faFolder, faTag, faSignOutAlt, faFilter, faExclamationTriangle, faCaretDown, faUser, faCheck, faTable, faMinus, faColumns, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Subject, Subscription } from 'rxjs';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
@@ -49,6 +49,10 @@ export class App implements OnInit, OnDestroy {
   faCaretDown = faCaretDown;
   faUser = faUser;
   faCheck = faCheck;
+  faTable = faTable;
+  faMinus = faMinus;
+  faColumns = faColumns;
+  faTrash = faTrash;
 
   @ViewChild('tagInput', { static: false }) tagInput!: ElementRef<HTMLInputElement>;
   @ViewChild('linkUrlInput', { static: false }) linkUrlInput!: ElementRef<HTMLInputElement>;
@@ -110,6 +114,26 @@ export class App implements OnInit, OnDestroy {
   selectedEditTeamToAssign: Team | null = null;
   availableEditTeams: Team[] = [];
   editAssignedTeams: Team[] = [];
+
+  // Table functionality
+  showTableDropdown = false;
+  tableRows = 3;
+  tableColumns = 3;
+  selectedTable: HTMLTableElement | null = null;
+  selectedCell: HTMLTableCellElement | null = null;
+
+  // Table size change tracking
+  onTableRowsChange(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    this.tableRows = parseInt(target.value) || 3;
+    console.log('Table rows changed to:', this.tableRows); // Debug log
+  }
+
+  onTableColumnsChange(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    this.tableColumns = parseInt(target.value) || 3;
+    console.log('Table columns changed to:', this.tableColumns); // Debug log
+  }
 
   // OS detection for keyboard shortcuts
   private isMac(): boolean {
@@ -195,6 +219,10 @@ export class App implements OnInit, OnDestroy {
       this.showDeleteConfirmationModal = show;
       this.noteToDelete = note;
     });
+    
+    // Initialize table properties
+    this.selectedTable = null;
+    this.selectedCell = null;
   }
 
   ngOnInit(): void {
@@ -331,14 +359,25 @@ export class App implements OnInit, OnDestroy {
     this.selectedTeamToAssign = null;
     this.showTeamDropdown = false;
     
+    // Reset table selection
+    this.selectedTable = null;
+    this.selectedCell = null;
+    
     setTimeout(() => {
       this.titleInput.nativeElement.focus();
+      // Add table event listeners
+      this.addTableEventListeners('create');
     }, 0);
   }
 
   closeCreateNoteModal(): void {
     this.showCreateNoteModal = false;
     this.resetNoteForm();
+    // Remove table event listeners
+    this.removeTableEventListeners('create');
+    // Clear table selection
+    this.selectedTable = null;
+    this.selectedCell = null;
   }
 
   openEditNoteModal(note: Note): void {
@@ -349,6 +388,15 @@ export class App implements OnInit, OnDestroy {
     // Reset edit team dropdown state (but keep the populated teams)
     this.selectedEditTeamToAssign = null;
     this.showEditTeamDropdown = false;
+    
+    // Reset table selection
+    this.selectedTable = null;
+    this.selectedCell = null;
+    
+    setTimeout(() => {
+      // Add table event listeners
+      this.addTableEventListeners('edit');
+    }, 0);
   }
 
   openDeleteConfirmationModal(note: Note): void {
@@ -358,6 +406,11 @@ export class App implements OnInit, OnDestroy {
   closeEditNoteModal(): void {
     this.modalService.closeEditNoteModal();
     this.resetEditNoteForm();
+    // Remove table event listeners
+    this.removeTableEventListeners('edit');
+    // Clear table selection
+    this.selectedTable = null;
+    this.selectedCell = null;
   }
 
   closeDeleteConfirmationModal(): void {
@@ -595,6 +648,263 @@ export class App implements OnInit, OnDestroy {
     this.newLinkText = target.value;
   }
 
+  // Table functionality methods
+  toggleTableDropdown(): void {
+    this.showTableDropdown = !this.showTableDropdown;
+    if (this.showTableDropdown) {
+      // Save current cursor position when opening dropdown
+      const selection = window.getSelection();
+      if (selection && selection.rangeCount > 0) {
+        this.savedCursorRange = selection.getRangeAt(0).cloneRange();
+      } else {
+        this.savedCursorRange = null;
+      }
+    }
+    if (!this.showTableDropdown) {
+      this.savedCursorRange = null;
+    }
+  }
+
+  onTableDropdownClick(event: Event): void {
+    // Prevent the dropdown from closing when clicking inside it
+    event.stopPropagation();
+  }
+
+  insertTable(): void {
+    if (this.tableRows < 1 || this.tableColumns < 1) return;
+
+    console.log('Inserting table with dimensions:', this.tableRows, 'x', this.tableColumns); // Debug log
+    const tableHtml = this.generateTableHTML(this.tableRows, this.tableColumns);
+    console.log('Inserting table:', tableHtml); // Debug log
+    
+    // Find the active editor based on which modal is open
+    let targetEditor: HTMLElement;
+    
+    if (this.showEditNoteModal) {
+      targetEditor = document.querySelector('.edit-note-modal .editor-content') as HTMLElement;
+    } else {
+      targetEditor = document.querySelector('.create-note-modal .editor-content') as HTMLElement;
+    }
+    
+    if (targetEditor) {
+      console.log('Found target editor:', targetEditor); // Debug log
+      console.log('Editor HTML before insertion:', targetEditor.innerHTML); // Debug log
+      
+      // Ensure editor is focused
+      targetEditor.focus();
+      
+      // Restore saved cursor position or move to end
+      const selection = window.getSelection();
+      if (this.savedCursorRange) {
+        selection?.removeAllRanges();
+        selection?.addRange(this.savedCursorRange);
+      } else {
+        // No saved position, move cursor to end
+        const range = document.createRange();
+        range.selectNodeContents(targetEditor);
+        range.collapse(false);
+        selection?.removeAllRanges();
+        selection?.addRange(range);
+      }
+      
+      // Insert the table at the current cursor position
+      const result = document.execCommand('insertHTML', false, tableHtml);
+      console.log('Insert command result:', result); // Debug log
+      console.log('Editor HTML after insertion:', targetEditor.innerHTML); // Debug log
+      
+      // Also try to append the table directly if execCommand fails
+      if (!result) {
+        console.log('execCommand failed, trying direct append'); // Debug log
+        targetEditor.innerHTML += tableHtml;
+        console.log('Direct append completed, new HTML:', targetEditor.innerHTML); // Debug log
+      }
+      
+      // Select the newly inserted table to show controls
+      setTimeout(() => {
+        const newTable = targetEditor.querySelector('table.note-table') as HTMLTableElement;
+        if (newTable) {
+          this.selectedTable = newTable;
+          console.log('Table selected after insertion:', this.selectedTable); // Debug log
+        }
+      }, 100);
+      
+      console.log('Table inserted successfully'); // Debug log
+    } else {
+      console.log('Target editor not found'); // Debug log
+    }
+    
+    this.showTableDropdown = false;
+    this.savedCursorRange = null;
+  }
+
+  generateTableHTML(rows: number, columns: number): string {
+    let tableHtml = '<div class="table-responsive">';
+    tableHtml += '<table class="note-table" style="border: 2px solid #333; border-collapse: collapse;">';
+    
+    for (let i = 0; i < rows; i++) {
+      tableHtml += '<tr>';
+      for (let j = 0; j < columns; j++) {
+        tableHtml += '<td contenteditable="true" class="table-cell" data-row="' + i + '" data-col="' + j + '" style="border: 1px solid #333; padding: 8px; min-width: 80px; min-height: 40px; background-color: #f9f9f9;">Cell ' + (i + 1) + '-' + (j + 1) + '</td>';
+      }
+      tableHtml += '</tr>';
+    }
+    
+    tableHtml += '</table>';
+    tableHtml += '</div>';
+    console.log('Generated table HTML:', tableHtml); // Debug log
+    return tableHtml;
+  }
+
+  addTableRow(): void {
+    if (!this.selectedTable) return;
+    
+    const newRow = document.createElement('tr');
+    const columnCount = this.selectedTable.rows[0]?.cells.length || 0;
+    
+    for (let i = 0; i < columnCount; i++) {
+      const newCell = document.createElement('td');
+      newCell.contentEditable = 'true';
+      newCell.className = 'table-cell';
+      newCell.setAttribute('data-row', (this.selectedTable.rows.length).toString());
+      newCell.setAttribute('data-col', i.toString());
+      newRow.appendChild(newCell);
+    }
+    
+    this.selectedTable.appendChild(newRow);
+    this.updateTableDataAttributes();
+  }
+
+  removeTableRow(): void {
+    if (!this.selectedTable || this.selectedTable.rows.length <= 1) return;
+    
+    this.selectedTable.deleteRow(-1);
+    this.updateTableDataAttributes();
+  }
+
+  addTableColumn(): void {
+    if (!this.selectedTable) return;
+    
+    const rows = this.selectedTable.rows;
+    const columnCount = rows[0]?.cells.length || 0;
+    
+    for (let i = 0; i < rows.length; i++) {
+      const newCell = document.createElement('td');
+      newCell.contentEditable = 'true';
+      newCell.className = 'table-cell';
+      newCell.setAttribute('data-row', i.toString());
+      newCell.setAttribute('data-col', columnCount.toString());
+      rows[i].appendChild(newCell);
+    }
+  }
+
+  removeTableColumn(): void {
+    if (!this.selectedTable) return;
+    
+    const rows = this.selectedTable.rows;
+    const columnCount = rows[0]?.cells.length || 0;
+    
+    if (columnCount <= 1) return;
+    
+    for (let i = 0; i < rows.length; i++) {
+      rows[i].deleteCell(-1);
+    }
+    
+    this.updateTableDataAttributes();
+  }
+
+  deleteTable(): void {
+    if (!this.selectedTable) return;
+    
+    this.selectedTable.remove();
+    this.selectedTable = null;
+    this.selectedCell = null;
+  }
+
+  updateTableDataAttributes(): void {
+    if (!this.selectedTable) return;
+    
+    const rows = this.selectedTable.rows;
+    for (let i = 0; i < rows.length; i++) {
+      const cells = rows[i].cells;
+      for (let j = 0; j < cells.length; j++) {
+        cells[j].setAttribute('data-row', i.toString());
+        cells[j].setAttribute('data-col', j.toString());
+      }
+    }
+  }
+
+  onTableClick(event: Event): void {
+    const target = event.target as HTMLElement;
+    console.log('Table click event:', target.tagName, target); // Debug log
+    
+    if (target.tagName === 'TABLE') {
+      this.selectedTable = target as HTMLTableElement;
+      this.selectedCell = null;
+      console.log('Table selected:', this.selectedTable); // Debug log
+    } else if (target.tagName === 'TD') {
+      this.selectedTable = target.closest('table') as HTMLTableElement;
+      this.selectedCell = target as HTMLTableCellElement;
+      console.log('Cell selected:', this.selectedCell, 'Table:', this.selectedTable); // Debug log
+    }
+    
+    // Update the UI to show table controls
+    this.updateTableControlsVisibility();
+  }
+
+  updateTableControlsVisibility(): void {
+    // This method will be called to update the UI when table selection changes
+    // The Angular change detection will handle updating the *ngIf="selectedTable" conditions
+  }
+
+  addTableEventListeners(modalType: 'create' | 'edit'): void {
+    const selector = modalType === 'create' ? '.create-note-modal .editor-content' : '.edit-note-modal .editor-content';
+    const editor = document.querySelector(selector) as HTMLElement;
+    
+    if (editor) {
+      // Add click event listener for table selection
+      const clickHandler = this.onTableClick.bind(this);
+      editor.addEventListener('click', clickHandler);
+      
+      // Store the handler reference for removal
+      (editor as any)._tableClickHandler = clickHandler;
+      
+      // Add focus event listener for table cells
+      const focusHandler = (event: Event) => {
+        const target = event.target as HTMLElement;
+        if (target.tagName === 'TD') {
+          this.selectedCell = target as HTMLTableCellElement;
+          this.selectedTable = target.closest('table') as HTMLTableElement;
+          this.updateTableControlsVisibility();
+        }
+      };
+      editor.addEventListener('focusin', focusHandler);
+      
+      // Store the handler reference for removal
+      (editor as any)._tableFocusHandler = focusHandler;
+    }
+  }
+
+  removeTableEventListeners(modalType: 'create' | 'edit'): void {
+    const selector = modalType === 'create' ? '.create-note-modal .editor-content' : '.edit-note-modal .editor-content';
+    const editor = document.querySelector(selector) as HTMLElement;
+    
+    if (editor) {
+      // Remove event listeners using stored references
+      const clickHandler = (editor as any)._tableClickHandler;
+      const focusHandler = (editor as any)._tableFocusHandler;
+      
+      if (clickHandler) {
+        editor.removeEventListener('click', clickHandler);
+        delete (editor as any)._tableClickHandler;
+      }
+      
+      if (focusHandler) {
+        editor.removeEventListener('focusin', focusHandler);
+        delete (editor as any)._tableFocusHandler;
+      }
+    }
+  }
+
   onTagDropdownClick(event: Event): void {
     // Prevent the dropdown from closing when clicking inside it
     event.stopPropagation();
@@ -613,6 +923,11 @@ export class App implements OnInit, OnDestroy {
       this.showLinkDropdown = false;
     }
     
+    // Close table dropdown if clicking outside
+    if (!target.closest('.table-dropdown-container')) {
+      this.showTableDropdown = false;
+    }
+    
     // Close user dropdown if clicking outside
     if (!target.closest('.user-dropdown-container')) {
       this.showUserDropdown = false;
@@ -626,7 +941,10 @@ export class App implements OnInit, OnDestroy {
       this.selectedEditTeamToAssign = null;
     }
 
-
+    // Handle table clicks for selection
+    if (target.tagName === 'TABLE' || target.tagName === 'TD') {
+      this.onTableClick(event);
+    }
   }
 
   createTag(): void {

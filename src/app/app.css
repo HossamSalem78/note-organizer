@@ -677,6 +677,193 @@ html {
   border: 1px solid #e9ecef;
 }
 
+/* Responsive tables in note details */
+.note-full-content table {
+  min-width: 100%;
+  width: auto;
+  border-collapse: collapse;
+  margin: 15px 0;
+  border: 2px solid #dee2e6;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.note-full-content table th,
+.note-full-content table td {
+  border: 1px solid #dee2e6;
+  padding: 8px 12px;
+  text-align: left;
+  vertical-align: top;
+  min-width: 80px;
+  white-space: nowrap;
+}
+
+.note-full-content table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #495057;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.note-full-content table td {
+  
+  transition: background-color 0.2s ease;
+}
+
+.note-full-content table td:hover {
+  background-color: #f8f9fa !important;
+}
+
+.note-details-modal .note-full-content table td:hover {
+  background-color: #f8f9fa !important;
+}
+
+/* Global table styles that will apply to all tables */
+table.note-table {
+  min-width: 100%;
+  width: auto;
+  border-collapse: collapse;
+  margin: 15px 0;
+  border: 2px solid #dee2e6;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+table.note-table th,
+table.note-table td {
+  border: 1px solid #dee2e6;
+  padding: 8px 12px;
+  text-align: left;
+  vertical-align: top;
+  min-width: 80px;
+  white-space: nowrap;
+}
+
+table.note-table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #495057;
+  border-bottom: 2px solid #dee2e6;
+}
+
+table.note-table td {
+  
+  transition: background-color 0.2s ease;
+}
+
+table.note-table td:hover {
+  background-color: #f8f9fa !important;
+}
+
+/* Most aggressive selectors for note details modal */
+.note-details-modal table,
+.note-details-modal .note-full-content table,
+.note-details-modal .modal-content table,
+.note-details-modal .modal-body table,
+.note-details-modal .note-details-content table,
+.note-details-modal .note-section table {
+  min-width: 100% !important;
+  width: auto !important;
+  border-collapse: collapse !important;
+  margin: 15px 0 !important;
+  border: 2px solid #dee2e6 !important;
+  border-radius: 6px !important;
+  overflow: hidden !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+.note-details-modal table th,
+.note-details-modal table td,
+.note-details-modal .note-full-content table th,
+.note-details-modal .note-full-content table td,
+.note-details-modal .modal-content table th,
+.note-details-modal .modal-content table td,
+.note-details-modal .modal-body table th,
+.note-details-modal .modal-body table td,
+.note-details-modal .note-details-content table th,
+.note-details-modal .note-details-content table td,
+.note-details-modal .note-section table th,
+.note-details-modal .note-section table td {
+  border: 1px solid #dee2e6 !important;
+  padding: 8px 12px !important;
+  text-align: left !important;
+  vertical-align: top !important;
+  min-width: 80px !important;
+  white-space: nowrap !important;
+}
+
+.note-details-modal table th,
+.note-details-modal .note-full-content table th,
+.note-details-modal .modal-content table th,
+.note-details-modal .modal-body table th,
+.note-details-modal .note-details-content table th,
+.note-details-modal .note-section table th {
+  background-color: #f8f9fa !important;
+  font-weight: 600 !important;
+  color: #495057 !important;
+  border-bottom: 2px solid #dee2e6 !important;
+}
+
+.note-details-modal table td,
+.note-details-modal .note-full-content table td,
+.note-details-modal .modal-content table td,
+.note-details-modal .modal-body table td,
+.note-details-modal .note-details-content table td,
+.note-details-modal .note-section table td {
+  
+  transition: background-color 0.2s ease !important;
+}
+
+.note-details-modal table td:hover,
+.note-details-modal .note-full-content table td:hover,
+.note-details-modal .modal-content table td:hover,
+.note-details-modal .modal-body table td:hover,
+.note-details-modal .note-details-content table td:hover,
+.note-details-modal .note-section table td:hover {
+  background-color: #f8f9fa !important;
+}
+
+/* Nuclear option using :deep() to penetrate Angular view encapsulation */
+:deep(.note-details-modal table),
+:deep(.note-details-modal table td),
+:deep(.note-details-modal table th) {
+  border: 1px solid #dee2e6 !important;
+  padding: 8px 12px !important;
+}
+
+/* Most basic universal table styles - these WILL apply */
+table {
+  border-collapse: collapse !important;
+  margin: 15px 0 !important;
+  border: 2px solid #dee2e6 !important;
+  border-radius: 6px !important;
+  overflow: hidden !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+}
+
+table td,
+table th {
+  border: 1px solid #dee2e6 !important;
+  padding: 8px 12px !important;
+  text-align: left !important;
+  vertical-align: top !important;
+  min-width: 80px !important;
+  white-space: nowrap !important;
+}
+
+table th {
+  background-color: #f8f9fa !important;
+  font-weight: 600 !important;
+  color: #495057 !important;
+  border-bottom: 2px solid #dee2e6 !important;
+}
+
+table td:hover {
+  background-color: #f8f9fa !important;
+}
+
 .note-category, .note-tags, .note-members {
   margin-bottom: 15px;
 }
@@ -1136,11 +1323,31 @@ html {
 
 .editor-content {
   min-height: 150px;
+  max-height: 600px;
+  min-width: 300px;
   padding: 12px;
   outline: none;
   font-size: 0.9rem;
   line-height: 1.5;
   overflow-y: auto;
+  resize: none;
+  overflow: auto;
+  position: relative;
+  border: 1px solid transparent;
+  transition: border-color 0.2s ease;
+}
+
+.editor-content:hover {
+  border-color: #dee2e6;
+}
+
+.editor-content:focus {
+  background-color: #fff;
+  border-color: #007bff;
+}
+
+.editor-content::after {
+  display: none;
 }
 
 .editor-content:empty::before {
@@ -1149,16 +1356,21 @@ html {
   font-style: italic;
 }
 
-.editor-content:focus {
-  background-color: #fff;
-}
-
 .form-group .rich-text-editor.is-invalid {
   border-color: #dc3545;
 }
 
 .modal-body .rich-text-editor {
-  max-height: 300px;
+  /* max-height: 300px; */
+}
+
+.form-group .rich-text-editor {
+  
+  resize: vertical;
+  overflow: auto;
+  min-height: 200px;
+  min-width: 300px;
+  max-width: none;
 }
 
 @media (max-width: 768px) {
@@ -1174,7 +1386,21 @@ html {
 
   .editor-content {
     min-height: 120px;
+    max-height: 400px;
+    min-width: 250px;
     font-size: 0.8rem;
+    resize: vertical; /* Only allow vertical resizing on mobile */
+  }
+  
+  .editor-content::after {
+    display: none; /* Hide resize handle on mobile */
+  }
+  
+  .form-group .rich-text-editor {
+    min-height: 150px;
+    max-height: 350px;
+    min-width: 250px;
+    resize: vertical; /* Only allow vertical resizing on mobile */
   }
 }
 
@@ -1496,6 +1722,280 @@ html {
   font-weight: 500;
   display: inline-block;
   margin-bottom: 3px;
+}
+
+/* Table Functionality Styles */
+.table-dropdown-container {
+  position: relative;
+}
+
+.table-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  width: 250px;
+  animation: dropdownFadeIn 0.2s ease;
+}
+
+.table-form {
+  padding: 15px;
+}
+
+.table-size-inputs {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.size-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.size-input-group label {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #333;
+}
+
+.table-size-input {
+  width: 60px;
+  padding: 6px 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+.table-size-input:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.table-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.table-actions .save-btn {
+  flex: 1;
+  padding: 8px 12px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.table-actions .save-btn:hover {
+  background-color: #0056b3;
+}
+
+.table-actions .cancel-btn {
+  flex: 1;
+  padding: 8px 12px;
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.table-actions .cancel-btn:hover {
+  background-color: #545b62;
+}
+
+.table-controls {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  margin-top: 5px;
+  padding: 5px;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  border: 1px solid #e9ecef;
+}
+
+.table-control-btn {
+  padding: 4px 8px;
+  font-size: 0.7rem;
+  background-color: #e9ecef;
+  border-color: #ced4da;
+  color: #495057;
+}
+
+.table-control-btn:hover {
+  background-color: #dee2e6;
+  border-color: #adb5bd;
+}
+
+.table-control-btn.danger {
+  background-color: #dc3545;
+  border-color: #dc3545;
+  color: white;
+}
+
+.table-control-btn.danger:hover {
+  background-color: #c82333;
+  border-color: #bd2130;
+}
+
+/* Table Styles */
+.note-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 15px 0;
+  border: 2px solid #dee2e6;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.note-table th,
+.note-table td {
+  border: 1px solid #dee2e6;
+  padding: 8px 12px;
+  text-align: left;
+  vertical-align: top;
+  min-width: 80px;
+}
+
+.note-table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #495057;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.note-table td {
+  background-color: white;
+  transition: background-color 0.2s ease;
+}
+
+.note-table td:hover {
+  background-color: #f8f9fa;
+}
+
+.note-table td:focus {
+  background-color: #e3f2fd;
+  outline: 2px solid #2196f3;
+  outline-offset: -2px;
+}
+
+.table-cell {
+  position: relative;
+  min-height: 40px;
+}
+
+.table-cell:empty::before {
+  content: 'Click to edit...';
+  color: #adb5bd;
+  font-style: italic;
+  font-size: 0.8rem;
+}
+
+/* Table Selection Styles */
+.note-table.selected {
+  outline: 3px solid #007bff;
+  outline-offset: 2px;
+}
+
+.note-table .table-cell.selected {
+  background-color: #e3f2fd;
+  outline: 2px solid #2196f3;
+  outline-offset: -2px;
+}
+
+/* Responsive Table */
+@media (max-width: 768px) {
+  .table-dropdown {
+    width: 200px;
+  }
+  
+  .table-size-inputs {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .table-controls {
+    flex-direction: column;
+  }
+  
+  .table-control-btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .note-table {
+    font-size: 0.8rem;
+  }
+  
+  .note-table th,
+  .note-table td {
+    padding: 6px 8px;
+    min-width: 60px;
+  }
+}
+
+/* Use ::ng-deep to penetrate Angular view encapsulation */
+::ng-deep .note-table {
+  width: auto !important;
+  min-width: 100% !important;
+  border-collapse: collapse !important;
+  margin: 15px 0 !important;
+  border: 2px solid #dee2e6 !important;
+  border-radius: 6px !important;
+  overflow: visible !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+  table-layout: auto !important;
+}
+
+::ng-deep .note-table th,
+::ng-deep .note-table td {
+  border: 1px solid #dee2e6 !important;
+  padding: 8px 12px !important;
+  text-align: left !important;
+  vertical-align: top !important;
+  min-width: 80px !important;
+  white-space: nowrap !important;
+}
+
+::ng-deep .note-table th {
+  background-color: #f8f9fa !important;
+  font-weight: 600 !important;
+  color: #495057 !important;
+  border-bottom: 2px solid #dee2e6 !important;
+}
+
+::ng-deep .note-table td {
+  
+  transition: background-color 0.2s ease !important;
+}
+
+::ng-deep .note-table td:hover {
+  background-color: #f8f9fa !important;
+}
+
+
+
+/* Also target .table-responsive class directly */
+::ng-deep .table-responsive {
+  overflow-x: auto !important;
+  overflow-y: visible !important;
+  width: 100%;
 }
 
 

@@ -155,6 +155,43 @@
               <button type="button" class="format-btn" (click)="formatText('insertOrderedList')" title="Numbered List">
                 1. List
               </button>
+              <div class="table-dropdown-container">
+                <button type="button" class="format-btn" (click)="toggleTableDropdown()" title="Insert Table">
+                  <fa-icon [icon]="faTable"></fa-icon> Table
+                </button>
+                <div class="table-dropdown" *ngIf="showTableDropdown" (click)="onTableDropdownClick($event)">
+                  <div class="table-form">
+                    <div class="table-size-inputs">
+                      <div class="size-input-group">
+                        <label>Rows:</label>
+                        <input 
+                          type="number" 
+                          [value]="tableRows"
+                          (change)="onTableRowsChange($event)"
+                          min="1" 
+                          max="20"
+                          class="table-size-input"
+                        >
+                      </div>
+                      <div class="size-input-group">
+                        <label>Columns:</label>
+                        <input 
+                          type="number" 
+                          [value]="tableColumns"
+                          (change)="onTableColumnsChange($event)"
+                          min="1" 
+                          max="20"
+                          class="table-size-input"
+                        >
+                      </div>
+                    </div>
+                    <div class="table-actions">
+                      <button (click)="insertTable()" class="save-btn">Insert Table</button>
+                      <button (click)="toggleTableDropdown()" class="cancel-btn">Cancel</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
               <div class="link-dropdown-container">
                 <button type="button" class="format-btn" (click)="toggleLinkDropdown()" title="Insert Link">
                   🔗 Link
@@ -188,6 +225,23 @@
               <button type="button" class="format-btn" (click)="insertImage()" title="Insert Image">
                 🖼️ Image
               </button>
+              <div class="table-controls" *ngIf="selectedTable">
+                <button type="button" class="format-btn table-control-btn" (click)="addTableRow()" title="Add Row">
+                  <fa-icon [icon]="faPlus"></fa-icon> Row
+                </button>
+                <button type="button" class="format-btn table-control-btn" (click)="removeTableRow()" title="Remove Row">
+                  <fa-icon [icon]="faMinus"></fa-icon> Row
+                </button>
+                <button type="button" class="format-btn table-control-btn" (click)="addTableColumn()" title="Add Column">
+                  <fa-icon [icon]="faColumns"></fa-icon> Col
+                </button>
+                <button type="button" class="format-btn table-control-btn" (click)="removeTableColumn()" title="Remove Column">
+                  <fa-icon [icon]="faMinus"></fa-icon> Col
+                </button>
+                <button type="button" class="format-btn table-control-btn danger" (click)="deleteTable()" title="Delete Table">
+                  <fa-icon [icon]="faTrash"></fa-icon> Delete
+                </button>
+              </div>
             </div>
             <div 
               class="editor-content"
@@ -443,6 +497,43 @@
               <button type="button" class="format-btn" (click)="formatText('insertOrderedList')" title="Numbered List">
                 1. List
               </button>
+              <div class="table-dropdown-container">
+                <button type="button" class="format-btn" (click)="toggleTableDropdown()" title="Insert Table">
+                  <fa-icon [icon]="faTable"></fa-icon> Table
+                </button>
+                <div class="table-dropdown" *ngIf="showTableDropdown" (click)="onTableDropdownClick($event)">
+                  <div class="table-form">
+                    <div class="table-size-inputs">
+                      <div class="size-input-group">
+                        <label>Rows:</label>
+                        <input 
+                          type="number" 
+                          [value]="tableRows"
+                          (change)="onTableRowsChange($event)"
+                          min="1" 
+                          max="20"
+                          class="table-size-input"
+                        >
+                      </div>
+                      <div class="size-input-group">
+                        <label>Columns:</label>
+                        <input 
+                          type="number" 
+                          [value]="tableColumns"
+                          (change)="onTableColumnsChange($event)"
+                          min="1" 
+                          max="20"
+                          class="table-size-input"
+                        >
+                      </div>
+                    </div>
+                    <div class="table-actions">
+                      <button (click)="insertTable()" class="save-btn">Insert Table</button>
+                      <button (click)="toggleTableDropdown()" class="cancel-btn">Cancel</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
               <div class="link-dropdown-container">
                 <button type="button" class="format-btn" (click)="toggleLinkDropdown()" title="Insert Link">
                   🔗 Link
@@ -476,6 +567,23 @@
               <button type="button" class="format-btn" (click)="insertImage()" title="Insert Image">
                 🖼️ Image
               </button>
+              <div class="table-controls" *ngIf="selectedTable">
+                <button type="button" class="format-btn table-control-btn" (click)="addTableRow()" title="Add Row">
+                  <fa-icon [icon]="faPlus"></fa-icon> Row
+                </button>
+                <button type="button" class="format-btn table-control-btn" (click)="removeTableRow()" title="Remove Row">
+                  <fa-icon [icon]="faMinus"></fa-icon> Row
+                </button>
+                <button type="button" class="format-btn table-control-btn" (click)="addTableColumn()" title="Add Column">
+                  <fa-icon [icon]="faColumns"></fa-icon> Col
+                </button>
+                <button type="button" class="format-btn table-control-btn" (click)="removeTableColumn()" title="Remove Column">
+                  <fa-icon [icon]="faMinus"></fa-icon> Col
+                </button>
+                <button type="button" class="format-btn table-control-btn danger" (click)="deleteTable()" title="Delete Table">
+                  <fa-icon [icon]="faTrash"></fa-icon> Delete
+                </button>
+              </div>
             </div>
             <div 
               class="editor-content"
