@@ -51,7 +51,29 @@
       (click)="selectFolder(folder.id)"
     >
       <fa-icon [icon]="faFolder" class="folder-icon"></fa-icon>
-      <span class="folder-name">{{ folder.name }}</span>
+      
+      <!-- Show input when editing, span when not editing -->
+      <div class="folder-name-container">
+        <input 
+          *ngIf="editingFolderId === folder.id"
+          type="text"
+          [(ngModel)]="editingFolderName"
+          class="folder-name-input"
+          [attr.data-folder-id]="folder.id"
+          (keydown)="onFolderNameKeyDown($event, folder)"
+          (blur)="saveFolderName(folder)"
+          maxlength="50"
+        >
+        <span 
+          *ngIf="editingFolderId !== folder.id"
+          class="folder-name"
+          (dblclick)="startEditingFolder(folder, $event)"
+          title="Double-click to rename"
+        >
+          {{ folder.name }}
+        </span>
+      </div>
+      
       <button 
         class="delete-folder-btn" 
         (click)="deleteFolder(folder.id)"

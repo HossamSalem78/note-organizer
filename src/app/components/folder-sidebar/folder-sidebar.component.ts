@@ -40,6 +40,10 @@ export class FolderSidebarComponent implements OnInit, OnDestroy {
   folderToDelete: Folder | null = null;
   deletingFolder = false;
 
+  // Inline editing properties
+  editingFolderId: string | null = null;
+  editingFolderName = '';
+
   @Output() folderSelected = new EventEmitter<string | null>();
 
   private foldersUpdateSubscription: Subscription = new Subscription();
@@ -91,6 +95,60 @@ export class FolderSidebarComponent implements OnInit, OnDestroy {
   selectFolder(folderId: string | null): void {
     this.selectedFolderId = folderId;
     this.folderSelected.emit(folderId);
+  }
+
+  // Inline editing methods
+  startEditingFolder(folder: Folder, event: Event): void {
+    event.stopPropagation();
+    this.editingFolderId = folder.id;
+    this.editingFolderName = folder.name;
+    
+    // Focus the input after a brief delay to ensure it's rendered
+    setTimeout(() => {
+      const inputElement = document.querySelector(`input[data-folder-id="${folder.id}"]`) as HTMLInputElement;
+      if (inputElement) {
+        inputElement.focus();
+        inputElement.select();
+      }
+    }, 0);
+  }
+
+  saveFolderName(folder: Folder): void {
+    if (!this.editingFolderName.trim() || this.editingFolderName.trim() === folder.name) {
+      this.cancelEditing();
+      return;
+    }
+
+    const updatedFolder = { ...folder, name: this.editingFolderName.trim() };
+    
+    this.foldersService.updateFolder(updatedFolder).subscribe({
+      next: () => {
+        this.editingFolderId = null;
+        this.editingFolderName = '';
+        this.app.showToasterNotification(`Folder renamed to '${updatedFolder.name}' successfully!`);
+      },
+      error: (error) => {
+        console.error('Error updating folder:', error);
+        this.app.showToasterNotification('Failed to rename folder. Please try again.', 'error');
+        // Reset to original name on error
+        this.editingFolderName = folder.name;
+      }
+    });
+  }
+
+  cancelEditing(): void {
+    this.editingFolderId = null;
+    this.editingFolderName = '';
+  }
+
+  onFolderNameKeyDown(event: KeyboardEvent, folder: Folder): void {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      this.saveFolderName(folder);
+    } else if (event.key === 'Escape') {
+      event.preventDefault();
+      this.cancelEditing();
+    }
   }
 
   toggleAddFolder(): void {
@@ -183,6 +241,14 @@ export class FolderSidebarComponent implements OnInit, OnDestroy {
       this.showAddFolder = false;
       this.newFolderName = '';
     }
+
+    // Close inline editing when clicking outside
+    if (this.editingFolderId) {
+      const editingInput = target.closest('.folder-name-input');
+      if (!editingInput) {
+        this.cancelEditing();
+      }
+    }
   }
 
   onFolderDropdownClick(event: Event): void {
@@ -198,12 +264,14 @@ export class FolderSidebarComponent implements OnInit, OnDestroy {
         this.newFolderName = '';
       } else if (this.showDeleteConfirmationModal) {
         this.closeDeleteConfirmationModal();
+      } else if (this.editingFolderId) {
+        this.cancelEditing();
       }
       return;
     }
 
     // Only allow shortcuts when no dropdown/modal is open
-    if (this.showAddFolder || this.showDeleteConfirmationModal) {
+    if (this.showAddFolder || this.showDeleteConfirmationModal || this.editingFolderId) {
       return;
     }
 

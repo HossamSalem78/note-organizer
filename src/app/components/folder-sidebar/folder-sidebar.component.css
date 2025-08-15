@@ -182,10 +182,41 @@
   font-size: 1.1rem;
 }
 
+.folder-name-container {
+  flex: 1;
+  position: relative;
+}
+
 .folder-name {
   flex: 1;
   font-weight: 500;
   color: #333;
+  
+  user-select: none;
+}
+
+.folder-name:hover {
+  color: #007bff;
+}
+
+.folder-name-input {
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-size: inherit;
+  font-weight: inherit;
+  color: inherit;
+  outline: none;
+  box-sizing: border-box;
+  border-radius: 2px;
+  transition: background-color 0.2s ease;
+}
+
+.folder-name-input:focus {
+  background: rgba(0, 123, 255, 0.1);
+  padding: 2px 4px;
+  margin: -2px -4px;
 }
 
 .delete-folder-btn {

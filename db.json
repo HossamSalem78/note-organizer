@@ -402,6 +402,14 @@
       "lastName": "Salem",
       "dateOfBirth": "1995-01-31",
       "password": "123456"
+    },
+    {
+      "id": "1755181168694",
+      "email": "admin@example.com",
+      "firstName": "Hossam",
+      "lastName": "Salem",
+      "dateOfBirth": "2005-03-23",
+      "password": "123456"
     }
   ]
 }
