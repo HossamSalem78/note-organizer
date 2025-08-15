@@ -141,7 +141,7 @@ export class App implements OnInit, OnDestroy {
   }
 
   private getModifierKey(): 'alt' | 'meta' {
-    return this.isMac() ? 'meta' : 'alt';
+    return this.isMac() ? 'alt' : 'alt';
   }
   
   // Form for creating notes
@@ -1400,7 +1400,7 @@ export class App implements OnInit, OnDestroy {
 
     // Modifier + Shift + S: Focus search bar
     if (event.shiftKey && event.key.toLowerCase() === 's' && 
-        (this.isMac() ? event.metaKey : event.altKey)) {
+        (this.isMac() ? event.altKey : event.altKey)) {
       event.preventDefault();
       const searchInput = document.querySelector('.search-input') as HTMLInputElement;
       if (searchInput) {
@@ -1410,14 +1410,14 @@ export class App implements OnInit, OnDestroy {
 
     // Modifier + Shift + N: Open create new note modal
     if (event.shiftKey && event.key.toLowerCase() === 'n' && 
-        (this.isMac() ? event.metaKey : event.altKey)) {
+        (this.isMac() ? event.altKey : event.altKey)) {
       event.preventDefault();
       this.openCreateNoteModal();
     }
 
     // Modifier + Shift + F: Open create new folder dropdown
     if (event.shiftKey && event.key.toLowerCase() === 'f' && 
-        (this.isMac() ? event.metaKey : event.altKey)) {
+        (this.isMac() ? event.altKey : event.altKey)) {
       event.preventDefault();
       // Dispatch custom event to trigger folder dropdown
       document.dispatchEvent(new CustomEvent('openCreateFolderDropdown'));
@@ -1425,14 +1425,14 @@ export class App implements OnInit, OnDestroy {
 
     // Modifier + Shift + G: Open create new tag dropdown
     if (event.shiftKey && event.key.toLowerCase() === 'g' && 
-        (this.isMac() ? event.metaKey : event.altKey)) {
+        (this.isMac() ? event.altKey : event.altKey)) {
       event.preventDefault();
       this.toggleTagDropdown();
     }
 
     // Modifier + Shift + T: Open create new team modal
     if (event.shiftKey && event.key.toLowerCase() === 't' && 
-        (this.isMac() ? event.metaKey : event.altKey)) {
+        (this.isMac() ? event.altKey : event.altKey)) {
       event.preventDefault();
       // Dispatch custom event to trigger team creation
       document.dispatchEvent(new CustomEvent('openCreateTeamModal'));

@@ -277,7 +277,7 @@ export class FolderSidebarComponent implements OnInit, OnDestroy {
 
     // Modifier + Shift + F: Open create new folder dropdown
     if (event.shiftKey && event.key.toLowerCase() === 'f' && 
-        (this.isMac() ? event.metaKey : event.altKey)) {
+        (this.isMac() ? event.altKey : event.altKey)) {
       event.preventDefault();
       this.toggleAddFolder();
     }

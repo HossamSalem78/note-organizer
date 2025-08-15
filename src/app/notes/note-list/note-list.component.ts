@@ -492,7 +492,7 @@ export class NoteListComponent implements OnInit, OnDestroy {
 
     // Modifier + Shift + S: Focus search bar
     if (event.shiftKey && event.key.toLowerCase() === 's' && 
-        (this.isMac() ? event.metaKey : event.altKey)) {
+        (this.isMac() ? event.altKey : event.altKey)) {
       event.preventDefault();
       const searchInput = this.elementRef.nativeElement.querySelector('.search-input') as HTMLInputElement;
       if (searchInput) {
@@ -502,7 +502,7 @@ export class NoteListComponent implements OnInit, OnDestroy {
 
     // Modifier + Shift + F: Open create new folder dropdown
     if (event.shiftKey && event.key.toLowerCase() === 'f' && 
-        (this.isMac() ? event.metaKey : event.altKey)) {
+        (this.isMac() ? event.altKey : event.altKey)) {
       event.preventDefault();
       // This will be handled by the folder sidebar component
       // We'll emit an event to trigger it
@@ -511,14 +511,14 @@ export class NoteListComponent implements OnInit, OnDestroy {
 
     // Modifier + Shift + G: Open create new tag dropdown
     if (event.shiftKey && event.key.toLowerCase() === 'g' && 
-        (this.isMac() ? event.metaKey : event.altKey)) {
+        (this.isMac() ? event.altKey : event.altKey)) {
       event.preventDefault();
       this.toggleTagDropdown();
     }
 
     // Modifier + Shift + N: Open create new note modal
     if (event.shiftKey && event.key.toLowerCase() === 'n' && 
-        (this.isMac() ? event.metaKey : event.altKey)) {
+        (this.isMac() ? event.altKey : event.altKey)) {
       event.preventDefault();
       this.openCreateNoteModal();
     }

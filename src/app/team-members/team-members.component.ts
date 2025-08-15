@@ -350,7 +350,7 @@ export class TeamMembersComponent implements OnInit, OnDestroy, AfterViewChecked
 
     // Modifier + Shift + T: Open create new team modal
     if (event.shiftKey && event.key.toLowerCase() === 't' && 
-        (this.isMac() ? event.metaKey : event.altKey)) {
+        (this.isMac() ? event.altKey : event.altKey)) {
       event.preventDefault();
       this.createNewTeam();
     }
